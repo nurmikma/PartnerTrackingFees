@@ -9,8 +9,8 @@ type HomeComponentType = InstanceType<typeof Home>;
 
 describe('Home', () => {
   let home: HomeComponentType;
-  let authenticated;
-  let currentUsername;
+  let authenticated: any;
+  let currentUsername: any;
   let login: ReturnType<typeof useLoginModal>;
 
   beforeEach(() => {

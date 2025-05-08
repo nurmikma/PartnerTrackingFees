@@ -1,0 +1,27 @@
+{
+  "partnerTrackingFeesApp": {
+    "client": {
+      "home": {
+        "title": "Clients",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Client",
+        "createOrEditLabel": "Lisa või muuda Client",
+        "notFound": "Ei leitud ühtegi Clients"
+      },
+      "created": "Uus Client on loodud identifikaatoriga { param }",
+      "updated": "Client identifikaatoriga { param } on muudetud",
+      "deleted": "Client identifikaatoriga { param } on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Client { id }?"
+      },
+      "detail": {
+        "title": "Client"
+      },
+      "id": "ID",
+      "clientId": "Client Id",
+      "clientName": "Client Name",
+      "partnerId": "Partner Id",
+      "partner": "Partner"
+    }
+  }
+}

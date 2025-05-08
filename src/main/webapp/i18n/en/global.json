@@ -7,7 +7,15 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entities",
-        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
+        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
+        "partner": "Partner",
+        "client": "Client",
+        "license": "License",
+        "invoice": "Invoice",
+        "invoiceLine": "Invoice Line",
+        "commissionRule": "Commission Rule",
+        "commissionRuleSet": "Commission Rule Set",
+        "commissionFee": "Commission Fee"
       },
       "account": {
         "main": "Account",

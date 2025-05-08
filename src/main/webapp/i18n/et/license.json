@@ -1,0 +1,38 @@
+{
+  "partnerTrackingFeesApp": {
+    "license": {
+      "home": {
+        "title": "Licenses",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus License",
+        "createOrEditLabel": "Lisa või muuda License",
+        "notFound": "Ei leitud ühtegi Licenses"
+      },
+      "created": "Uus License on loodud identifikaatoriga { param }",
+      "updated": "License identifikaatoriga { param } on muudetud",
+      "deleted": "License identifikaatoriga { param } on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada License { id }?"
+      },
+      "detail": {
+        "title": "License"
+      },
+      "id": "ID",
+      "licenseId": "License Id",
+      "licenseRuleName": "License Rule Name",
+      "licenseStartDate": "License Start Date",
+      "licenseEndDate": "License End Date",
+      "licenseQuantity": "License Quantity",
+      "pricePerLicense": "Price Per License",
+      "clientId": "Client Id",
+      "partnerId": "Partner Id",
+      "commissionRuleSetId": "Commission Rule Set Id",
+      "totalLicenseAmount": "Total License Amount",
+      "client": "Client",
+      "partner": "Partner",
+      "commissionRuleSet": "Commission Rule Set",
+      "invoiceLine": "Invoice Line",
+      "commissionFee": "Commission Fee"
+    }
+  }
+}

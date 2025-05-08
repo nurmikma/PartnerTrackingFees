@@ -1,0 +1,26 @@
+{
+  "partnerTrackingFeesApp": {
+    "commissionRuleSet": {
+      "home": {
+        "title": "Commission Rule Sets",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Commission Rule Set",
+        "createOrEditLabel": "Create or edit a Commission Rule Set",
+        "notFound": "No Commission Rule Sets found"
+      },
+      "created": "A new Commission Rule Set is created with identifier { param }",
+      "updated": "A Commission Rule Set is updated with identifier { param }",
+      "deleted": "A Commission Rule Set is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete Commission Rule Set { id }?"
+      },
+      "detail": {
+        "title": "Commission Rule Set"
+      },
+      "id": "ID",
+      "commissionRuleSetId": "Commission Rule Set Id",
+      "ruleSetName": "Rule Set Name",
+      "rules": "Rules"
+    }
+  }
+}

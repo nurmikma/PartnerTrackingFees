@@ -1,0 +1,22 @@
+{
+  "annotations": {
+    "changelogDate": "20250508132831"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "partnerID",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "partnerName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Partner",
+  "pagination": "pagination",
+  "relationships": [],
+  "searchEngine": "no"
+}

@@ -1,0 +1,29 @@
+{
+  "partnerTrackingFeesApp": {
+    "commissionRule": {
+      "home": {
+        "title": "Commission Rules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Commission Rule",
+        "createOrEditLabel": "Create or edit a Commission Rule",
+        "notFound": "No Commission Rules found"
+      },
+      "created": "A new Commission Rule is created with identifier { param }",
+      "updated": "A Commission Rule is updated with identifier { param }",
+      "deleted": "A Commission Rule is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete Commission Rule { id }?"
+      },
+      "detail": {
+        "title": "Commission Rule"
+      },
+      "id": "ID",
+      "ruleName": "Rule Name",
+      "description": "Description",
+      "startDay": "Start Day",
+      "endDay": "End Day",
+      "commissionPercentage": "Commission Percentage",
+      "commissionRuleSet": "Commission Rule Set"
+    }
+  }
+}

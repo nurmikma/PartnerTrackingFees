@@ -1,0 +1,36 @@
+{
+  "annotations": {
+    "changelogDate": "20250508132836"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "ruleName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "startDay",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endDay",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "commissionPercentage",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "CommissionRule",
+  "pagination": "pagination",
+  "relationships": [],
+  "searchEngine": "no"
+}

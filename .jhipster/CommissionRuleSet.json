@@ -1,0 +1,29 @@
+{
+  "annotations": {
+    "changelogDate": "20250508132837"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "commissionRuleSetId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "ruleSetName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "CommissionRuleSet",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "commissionRule",
+      "relationshipName": "rules",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no"
+}

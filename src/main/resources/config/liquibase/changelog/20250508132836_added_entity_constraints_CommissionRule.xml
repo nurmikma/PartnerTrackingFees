@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity CommissionRule.
+    -->
+    <changeSet id="20250508132836-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="commission_rule_set_id"
+                                 baseTableName="commission_rule"
+                                 constraintName="fk_commission_rule__commission_rule_set_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="commission_rule_set"
+                                 />
+    </changeSet>
+</databaseChangeLog>
