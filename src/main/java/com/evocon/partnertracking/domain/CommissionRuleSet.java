@@ -1,18 +1,20 @@
 package com.evocon.partnertracking.domain;
 
+import com.evocon.partnertracking.utils.Calculations;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 /**
  * A CommissionRuleSet.
  */
 @Entity
 @Table(name = "commission_rule_set")
-@SuppressWarnings("common-java:DuplicatedBlocks")
 public class CommissionRuleSet implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,11 +33,29 @@ public class CommissionRuleSet implements Serializable {
     @Column(name = "rule_set_name", nullable = false)
     private String ruleSetName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "commissionRuleSet")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "commissionRuleSet", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "commissionRuleSet" }, allowSetters = true)
     private Set<CommissionRule> rules = new HashSet<>();
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
+    public CommissionRuleSet() {}
+
+    public CommissionRuleSet(String ruleSetName, String commissionRuleSetId) {
+        this.ruleSetName = ruleSetName;
+        this.commissionRuleSetId = commissionRuleSetId;
+    }
+
+    //public static List<CommissionRuleSet> getAllCommissionRuleSets() {
+    //return allRuleSets; should be from the database
+    //}
+
+    // REMOVED:
+    // private static final List<CommissionRuleSet> allRuleSets = new ArrayList<>();
+
+    // REMOVED STATIC METHOD:
+    // public static Optional<CommissionRuleSet> getCommissionRuleSetById(...) { ... }
+
+    // REMOVED STATIC METHOD:
+    // public static List<CommissionRuleSet> getAllCommissionRuleSets() { ... }
 
     public Long getId() {
         return this.id;
@@ -80,6 +100,11 @@ public class CommissionRuleSet implements Serializable {
         return this.rules;
     }
 
+    public CommissionRuleSet rules(Set<CommissionRule> commissionRules) {
+        this.setRules(commissionRules);
+        return this;
+    }
+
     public void setRules(Set<CommissionRule> commissionRules) {
         if (this.rules != null) {
             this.rules.forEach(i -> i.setCommissionRuleSet(null));
@@ -90,12 +115,10 @@ public class CommissionRuleSet implements Serializable {
         this.rules = commissionRules;
     }
 
-    public CommissionRuleSet rules(Set<CommissionRule> commissionRules) {
-        this.setRules(commissionRules);
-        return this;
-    }
-
     public CommissionRuleSet addRules(CommissionRule commissionRule) {
+        if (isOverlapping(commissionRule)) {
+            throw new IllegalArgumentException("Commission rules cannot overlap.");
+        }
         this.rules.add(commissionRule);
         commissionRule.setCommissionRuleSet(this);
         return this;
@@ -107,32 +130,78 @@ public class CommissionRuleSet implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    private boolean isOverlapping(CommissionRule newRule) {
+        for (CommissionRule rule : rules) {
+            int ruleEndDay = rule.getEndDay() == null ? Integer.MAX_VALUE : rule.getEndDay();
+            int newRuleEndDay = newRule.getEndDay() == null ? Integer.MAX_VALUE : newRule.getEndDay();
+
+            if (newRule.getStartDay() <= ruleEndDay && rule.getStartDay() <= newRuleEndDay) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public BigDecimal calculateCommissionForLicense(
+        LocalDate targetDate,
+        BigDecimal licenseAmount,
+        LocalDate licenseStart,
+        LocalDate licenseEnd
+    ) {
+        LocalDate targetStartDate = targetDate.withDayOfMonth(1);
+        LocalDate targetEndDate = targetStartDate.withDayOfMonth(targetStartDate.lengthOfMonth());
+
+        int daysInMonth = targetStartDate.lengthOfMonth();
+        BigDecimal dailyLicenseValue = Calculations.divide(licenseAmount, daysInMonth);
+        BigDecimal totalCommission = BigDecimal.ZERO;
+
+        for (LocalDate day : getApplicableDays(targetStartDate, targetEndDate, licenseStart, licenseEnd)) {
+            long licenseAgeInDays = ChronoUnit.DAYS.between(licenseStart, day);
+            CommissionRule rule = findApplicableRule(licenseAgeInDays);
+
+            if (rule != null) {
+                BigDecimal dailyCommission = Calculations.multiplyByPercentage(dailyLicenseValue, rule.getCommissionPercentage());
+                totalCommission = Calculations.add(totalCommission, dailyCommission);
+            }
+        }
+        return Calculations.roundToTwoDecimals(totalCommission);
+    }
+
+    private List<LocalDate> getApplicableDays(LocalDate targetStart, LocalDate targetEnd, LocalDate licenseStart, LocalDate licenseEnd) {
+        List<LocalDate> applicableDays = new ArrayList<>();
+        for (LocalDate day = targetStart; !day.isAfter(targetEnd); day = day.plusDays(1)) {
+            if (!day.isBefore(licenseStart) && (licenseEnd == null || !day.isAfter(licenseEnd))) {
+                applicableDays.add(day);
+            }
+        }
+        return applicableDays;
+    }
+
+    private CommissionRule findApplicableRule(long licenseAgeInDays) {
+        for (CommissionRule rule : rules) {
+            long start = rule.getStartDay();
+            long end = (rule.getEndDay() == null || rule.getEndDay() == 0) ? Long.MAX_VALUE : rule.getEndDay();
+            if (licenseAgeInDays >= start && licenseAgeInDays <= end) {
+                return rule;
+            }
+        }
+        return null;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof CommissionRuleSet)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof CommissionRuleSet)) return false;
         return getId() != null && getId().equals(((CommissionRuleSet) o).getId());
     }
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "CommissionRuleSet{" +
-            "id=" + getId() +
-            ", commissionRuleSetId='" + getCommissionRuleSetId() + "'" +
-            ", ruleSetName='" + getRuleSetName() + "'" +
-            "}";
+        return String.format("CommissionRuleSet{ruleSetName='%s', rules=%s}", ruleSetName, rules);
     }
 }

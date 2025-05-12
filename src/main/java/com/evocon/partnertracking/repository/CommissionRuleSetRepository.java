@@ -1,6 +1,7 @@
 package com.evocon.partnertracking.repository;
 
 import com.evocon.partnertracking.domain.CommissionRuleSet;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CommissionRuleSetRepository extends JpaRepository<CommissionRuleSet, Long> {}
+public interface CommissionRuleSetRepository extends JpaRepository<CommissionRuleSet, Long> {
+    Optional<CommissionRuleSet> findByCommissionRuleSetId(String commissionRuleSetId);
+}

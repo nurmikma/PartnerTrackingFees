@@ -134,8 +134,9 @@ public class ClientResource {
                 if (client.getClientName() != null) {
                     existingClient.setClientName(client.getClientName());
                 }
-                if (client.getPartnerId() != null) {
-                    existingClient.setPartnerId(client.getPartnerId());
+                // Access the partner field and update the partner ID if provided
+                if (client.getPartner() != null && client.getPartner().getPartnerID() != null) {
+                    existingClient.getPartner().setPartnerID(client.getPartner().getPartnerID());
                 }
 
                 return existingClient;

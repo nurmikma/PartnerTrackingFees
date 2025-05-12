@@ -1,13 +1,14 @@
 package com.evocon.partnertracking.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Invoice.
@@ -30,14 +31,6 @@ public class Invoice implements Serializable {
     private String invoiceId;
 
     @NotNull
-    @Column(name = "client_id", nullable = false)
-    private String clientId;
-
-    @NotNull
-    @Column(name = "partner_id", nullable = false)
-    private String partnerId;
-
-    @NotNull
     @Column(name = "invoice_amount", precision = 21, scale = 2, nullable = false)
     private BigDecimal invoiceAmount;
 
@@ -49,7 +42,7 @@ public class Invoice implements Serializable {
     @Column(name = "invoice_type", nullable = false)
     private String invoiceType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "license", "invoice" }, allowSetters = true)
     private Set<InvoiceLine> lineItems = new HashSet<>();
 
@@ -60,8 +53,42 @@ public class Invoice implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Partner partner;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
+    // Constructors
+    public Invoice() {
+        this.invoiceType = "license";
+        this.lineItems = new HashSet<>();
+    }
 
+    public Invoice(String invoiceId, BigDecimal invoiceAmount, LocalDate invoiceDate, String invoiceType, Client client, Partner partner) {
+        this.invoiceId = invoiceId;
+        this.invoiceAmount = invoiceAmount;
+        this.invoiceDate = invoiceDate;
+        this.invoiceType = invoiceType;
+        this.client = client;
+        this.partner = partner;
+        this.lineItems = new HashSet<>();
+    }
+
+    // Business logic method: Add InvoiceLine from License
+    public void addLineItem(License license) {
+        InvoiceLine line = new InvoiceLine(license);
+        this.lineItems.add(line);
+        line.setInvoice(this);
+    }
+
+    // Business logic method: Get only active line items
+    @JsonIgnore
+    public Set<InvoiceLine> getActiveLineItems() {
+        return this.lineItems.stream().filter(line -> isLicenseActive(line.getLicense())).collect(Collectors.toSet());
+    }
+
+    private boolean isLicenseActive(License license) {
+        LocalDate licenseStart = license.getLicenseStartDate();
+        LocalDate licenseEnd = license.getLicenseEndDate();
+        return !this.invoiceDate.isBefore(licenseStart) && (licenseEnd == null || !this.invoiceDate.isAfter(licenseEnd));
+    }
+
+    // Getters and setters
     public Long getId() {
         return this.id;
     }
@@ -86,32 +113,6 @@ public class Invoice implements Serializable {
 
     public void setInvoiceId(String invoiceId) {
         this.invoiceId = invoiceId;
-    }
-
-    public String getClientId() {
-        return this.clientId;
-    }
-
-    public Invoice clientId(String clientId) {
-        this.setClientId(clientId);
-        return this;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getPartnerId() {
-        return this.partnerId;
-    }
-
-    public Invoice partnerId(String partnerId) {
-        this.setPartnerId(partnerId);
-        return this;
-    }
-
-    public void setPartnerId(String partnerId) {
-        this.partnerId = partnerId;
     }
 
     public BigDecimal getInvoiceAmount() {
@@ -210,36 +211,44 @@ public class Invoice implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
-
+    // Equality and hash
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Invoice)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof Invoice)) return false;
         return getId() != null && getId().equals(((Invoice) o).getId());
     }
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
+    // toString
     @Override
     public String toString() {
-        return "Invoice{" +
-            "id=" + getId() +
-            ", invoiceId='" + getInvoiceId() + "'" +
-            ", clientId='" + getClientId() + "'" +
-            ", partnerId='" + getPartnerId() + "'" +
-            ", invoiceAmount=" + getInvoiceAmount() +
-            ", invoiceDate='" + getInvoiceDate() + "'" +
-            ", invoiceType='" + getInvoiceType() + "'" +
-            "}";
+        return (
+            "Invoice{" +
+            "id=" +
+            getId() +
+            ", invoiceId='" +
+            getInvoiceId() +
+            "'" +
+            ", invoiceAmount=" +
+            getInvoiceAmount() +
+            ", invoiceDate='" +
+            getInvoiceDate() +
+            "'" +
+            ", invoiceType='" +
+            getInvoiceType() +
+            "'" +
+            ", clientId='" +
+            (client != null ? client.getId() : "null") +
+            "'" + // Accessing clientId via the client entity
+            ", partnerId='" +
+            (partner != null ? partner.getId() : "null") +
+            "'" + // Accessing partnerId via the partner entity
+            "}"
+        );
     }
 }

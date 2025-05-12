@@ -11,7 +11,6 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "commission_rule")
-@SuppressWarnings("common-java:DuplicatedBlocks")
 public class CommissionRule implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,6 +45,16 @@ public class CommissionRule implements Serializable {
     private CommissionRuleSet commissionRuleSet;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    public CommissionRule() {}
+
+    public CommissionRule(String ruleName, String description, int startDay, Integer endDay, BigDecimal commissionPercentage) {
+        this.ruleName = ruleName;
+        this.description = description;
+        this.startDay = startDay;
+        this.endDay = endDay;
+        this.commissionPercentage = commissionPercentage;
+    }
 
     public Long getId() {
         return this.id;
@@ -153,20 +162,17 @@ public class CommissionRule implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "CommissionRule{" +
-            "id=" + getId() +
-            ", ruleName='" + getRuleName() + "'" +
-            ", description='" + getDescription() + "'" +
-            ", startDay=" + getStartDay() +
-            ", endDay=" + getEndDay() +
-            ", commissionPercentage=" + getCommissionPercentage() +
-            "}";
+        return String.format(
+            "CommissionRule{name='%s', percentage=%.2f%%, start=%d, end=%s}",
+            ruleName,
+            commissionPercentage,
+            startDay,
+            endDay != null ? endDay.toString() : "null"
+        );
     }
 }

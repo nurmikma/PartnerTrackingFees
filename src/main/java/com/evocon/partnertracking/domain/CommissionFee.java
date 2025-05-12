@@ -33,6 +33,13 @@ public class CommissionFee implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    public CommissionFee() {}
+
+    public CommissionFee(License license, BigDecimal commissionAmount) {
+        this.license = license;
+        this.commissionAmount = commissionAmount;
+    }
+
     public Long getId() {
         return this.id;
     }
@@ -47,6 +54,10 @@ public class CommissionFee implements Serializable {
     }
 
     public BigDecimal getCommissionAmount() {
+        return this.commissionAmount;
+    }
+
+    public BigDecimal getCommissionFeeAmount() {
         return this.commissionAmount;
     }
 
@@ -87,16 +98,12 @@ public class CommissionFee implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "CommissionFee{" +
-            "id=" + getId() +
-            ", commissionAmount=" + getCommissionAmount() +
-            "}";
+        String licenseId = license != null ? license.getLicenseId() : "null";
+        return String.format("CommissionFee{id=%d, license=%s, commissionAmount=%.2f}", getId(), licenseId, commissionAmount);
     }
 }

@@ -35,8 +35,15 @@ public class InvoiceLine implements Serializable {
     @JsonIgnoreProperties(value = { "lineItems", "client", "partner" }, allowSetters = true)
     private Invoice invoice;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
+    // Constructors
+    public InvoiceLine() {}
 
+    public InvoiceLine(License license) {
+        this.license = license;
+        this.totalAmount = license.getTotalLicenseAmount();
+    }
+
+    // Getters and setters
     public Long getId() {
         return this.id;
     }
@@ -89,31 +96,21 @@ public class InvoiceLine implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof InvoiceLine)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof InvoiceLine)) return false;
         return getId() != null && getId().equals(((InvoiceLine) o).getId());
     }
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "InvoiceLine{" +
-            "id=" + getId() +
-            ", totalAmount=" + getTotalAmount() +
-            "}";
+        String licenseId = (license != null && license.getLicenseId() != null) ? license.getLicenseId() : "N/A";
+        return String.format("InvoiceLine {id=%d, license='%s', totalAmount=%.2f}", id, licenseId, totalAmount);
     }
 }

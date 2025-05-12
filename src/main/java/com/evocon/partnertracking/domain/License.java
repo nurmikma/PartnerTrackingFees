@@ -1,5 +1,6 @@
 package com.evocon.partnertracking.domain;
 
+import com.evocon.partnertracking.utils.Calculations;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -82,6 +83,66 @@ public class License implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    // Default constructor for JSON
+    public License() {}
+
+    public License(
+        String licenseId,
+        String licenseRuleName,
+        LocalDate licenseStartDate,
+        LocalDate licenseEndDate,
+        Integer licenseQuantity,
+        BigDecimal pricePerLicense,
+        String clientId,
+        String partnerId,
+        String commissionRuleSetId
+    ) {
+        this.licenseId = licenseId;
+        this.licenseRuleName = licenseRuleName;
+        this.licenseStartDate = licenseStartDate;
+        this.licenseEndDate = licenseEndDate;
+        this.licenseQuantity = licenseQuantity;
+        this.pricePerLicense = pricePerLicense;
+        this.clientId = clientId;
+        this.partnerId = partnerId;
+        this.commissionRuleSetId = commissionRuleSetId;
+        this.totalLicenseAmount = Calculations.calculateTotalLicenseAmount(this.licenseQuantity, this.pricePerLicense);
+    }
+
+    @Override
+    public String toString() {
+        return (
+            "License{" +
+            "licenseId='" +
+            licenseId +
+            '\'' +
+            ", licenseRuleName='" +
+            licenseRuleName +
+            '\'' +
+            ", licenseStartDate=" +
+            licenseStartDate +
+            ", licenseQuantity=" +
+            licenseQuantity +
+            ", pricePerLicense=" +
+            pricePerLicense +
+            ", clientId='" +
+            clientId +
+            '\'' +
+            ", partnerId='" +
+            partnerId +
+            '\'' +
+            ", commissionRuleSet=" +
+            commissionRuleSetId +
+            ", totalLicenseAmount=" +
+            totalLicenseAmount +
+            '}'
+        );
+    }
+
+    public boolean isActiveForMonth(LocalDate targetMonth) {
+        return licenseEndDate == null || !licenseEndDate.isBefore(targetMonth);
+    }
+
     public Long getId() {
         return this.id;
     }
@@ -158,6 +219,7 @@ public class License implements Serializable {
 
     public void setLicenseQuantity(Integer licenseQuantity) {
         this.licenseQuantity = licenseQuantity;
+        recalculateTotalAmount();
     }
 
     public BigDecimal getPricePerLicense() {
@@ -171,6 +233,7 @@ public class License implements Serializable {
 
     public void setPricePerLicense(BigDecimal pricePerLicense) {
         this.pricePerLicense = pricePerLicense;
+        recalculateTotalAmount();
     }
 
     public String getClientId() {
@@ -302,6 +365,13 @@ public class License implements Serializable {
         return this;
     }
 
+    // Private method to recalculate total license amount
+    private void recalculateTotalAmount() {
+        if (pricePerLicense != null && licenseQuantity != null && licenseQuantity > 0) {
+            this.totalLicenseAmount = Calculations.calculateTotalLicenseAmount(this.licenseQuantity, this.pricePerLicense);
+        }
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -317,25 +387,6 @@ public class License implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
-    }
-
-    // prettier-ignore
-    @Override
-    public String toString() {
-        return "License{" +
-            "id=" + getId() +
-            ", licenseId='" + getLicenseId() + "'" +
-            ", licenseRuleName='" + getLicenseRuleName() + "'" +
-            ", licenseStartDate='" + getLicenseStartDate() + "'" +
-            ", licenseEndDate='" + getLicenseEndDate() + "'" +
-            ", licenseQuantity=" + getLicenseQuantity() +
-            ", pricePerLicense=" + getPricePerLicense() +
-            ", clientId='" + getClientId() + "'" +
-            ", partnerId='" + getPartnerId() + "'" +
-            ", commissionRuleSetId='" + getCommissionRuleSetId() + "'" +
-            ", totalLicenseAmount=" + getTotalLicenseAmount() +
-            "}";
     }
 }

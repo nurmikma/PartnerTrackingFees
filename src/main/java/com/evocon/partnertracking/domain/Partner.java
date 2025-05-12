@@ -9,7 +9,6 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "partner")
-@SuppressWarnings("common-java:DuplicatedBlocks")
 public class Partner implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,56 +20,35 @@ public class Partner implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "partner_id", nullable = false)
-    private String partnerID;
-
-    @NotNull
     @Column(name = "partner_name", nullable = false)
     private String partnerName;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
+    // Default constructor required by JPA
+    public Partner() {}
 
-    public Long getId() {
-        return this.id;
+    // Constructor with validation
+    public Partner(String partnerName) {
+        this.partnerName = partnerName;
     }
 
-    public Partner id(Long id) {
-        this.setId(id);
-        return this;
+    // Getters and setters
+    public Long getId() {
+        return this.id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getPartnerID() {
-        return this.partnerID;
-    }
-
-    public Partner partnerID(String partnerID) {
-        this.setPartnerID(partnerID);
-        return this;
-    }
-
-    public void setPartnerID(String partnerID) {
-        this.partnerID = partnerID;
-    }
-
     public String getPartnerName() {
         return this.partnerName;
-    }
-
-    public Partner partnerName(String partnerName) {
-        this.setPartnerName(partnerName);
-        return this;
     }
 
     public void setPartnerName(String partnerName) {
         this.partnerName = partnerName;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
-
+    // Equals and hashCode methods based on ID
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -84,17 +62,12 @@ public class Partner implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
+    // toString method
     @Override
     public String toString() {
-        return "Partner{" +
-            "id=" + getId() +
-            ", partnerID='" + getPartnerID() + "'" +
-            ", partnerName='" + getPartnerName() + "'" +
-            "}";
+        return "Partner{" + "id=" + id + ", partnerName='" + partnerName + '\'' + '}';
     }
 }
