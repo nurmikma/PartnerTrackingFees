@@ -12,7 +12,21 @@
     <property name="timeType" value="time(6)" dbms="mariadb"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074242_added_entity_Partner.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074243_added_entity_Client.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074244_added_entity_License.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074245_added_entity_Invoice.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074246_added_entity_InvoiceLine.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074247_added_entity_CommissionRule.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074248_added_entity_CommissionRuleSet.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074249_added_entity_CommissionFee.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <include file="config/liquibase/changelog/20250515074243_added_entity_constraints_Client.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074244_added_entity_constraints_License.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074245_added_entity_constraints_Invoice.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074246_added_entity_constraints_InvoiceLine.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074247_added_entity_constraints_CommissionRule.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250515074249_added_entity_constraints_CommissionFee.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

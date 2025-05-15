@@ -1,0 +1,25 @@
+{
+  "partnerTrackingFeesApp": {
+    "commissionFee": {
+      "home": {
+        "title": "Commission Fees",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Commission Fee",
+        "createOrEditLabel": "Create or edit a Commission Fee",
+        "notFound": "No Commission Fees found"
+      },
+      "created": "A new Commission Fee is created with identifier { param }",
+      "updated": "A Commission Fee is updated with identifier { param }",
+      "deleted": "A Commission Fee is deleted with identifier { param }",
+      "delete": {
+        "question": "Are you sure you want to delete Commission Fee { id }?"
+      },
+      "detail": {
+        "title": "Commission Fee"
+      },
+      "id": "ID",
+      "commissionAmount": "Commission Amount",
+      "license": "License"
+    }
+  }
+}

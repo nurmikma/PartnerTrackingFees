@@ -37,6 +37,16 @@ public class CacheConfiguration {
             createCache(cm, com.evocon.partnertracking.repository.UserRepository.USERS_BY_LOGIN_CACHE);
             createCache(cm, com.evocon.partnertracking.repository.UserRepository.USERS_BY_EMAIL_CACHE);
             createCache(cm, com.evocon.partnertracking.domain.Authority.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.Partner.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.Client.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.License.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.Invoice.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.Invoice.class.getName() + ".lineItems");
+            createCache(cm, com.evocon.partnertracking.domain.InvoiceLine.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.CommissionRule.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.CommissionRuleSet.class.getName());
+            createCache(cm, com.evocon.partnertracking.domain.CommissionRuleSet.class.getName() + ".rules");
+            createCache(cm, com.evocon.partnertracking.domain.CommissionFee.class.getName());
             // jhipster-needle-caffeine-add-entry
         };
     }

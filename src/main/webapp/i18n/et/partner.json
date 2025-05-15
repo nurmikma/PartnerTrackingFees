@@ -1,0 +1,24 @@
+{
+  "partnerTrackingFeesApp": {
+    "partner": {
+      "home": {
+        "title": "Partners",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Partner",
+        "createOrEditLabel": "Lisa või muuda Partner",
+        "notFound": "Ei leitud ühtegi Partners"
+      },
+      "created": "Uus Partner on loodud identifikaatoriga { param }",
+      "updated": "Partner identifikaatoriga { param } on muudetud",
+      "deleted": "Partner identifikaatoriga { param } on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Partner { id }?"
+      },
+      "detail": {
+        "title": "Partner"
+      },
+      "id": "ID",
+      "partnerName": "Partner Name"
+    }
+  }
+}

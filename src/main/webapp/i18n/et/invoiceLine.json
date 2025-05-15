@@ -1,0 +1,26 @@
+{
+  "partnerTrackingFeesApp": {
+    "invoiceLine": {
+      "home": {
+        "title": "Invoice Lines",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Invoice Line",
+        "createOrEditLabel": "Lisa või muuda Invoice Line",
+        "notFound": "Ei leitud ühtegi Invoice Lines"
+      },
+      "created": "Uus Invoice Line on loodud identifikaatoriga { param }",
+      "updated": "Invoice Line identifikaatoriga { param } on muudetud",
+      "deleted": "Invoice Line identifikaatoriga { param } on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Invoice Line { id }?"
+      },
+      "detail": {
+        "title": "Invoice Line"
+      },
+      "id": "ID",
+      "totalAmount": "Total Amount",
+      "license": "License",
+      "invoice": "Invoice"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "annotations": {
+    "changelogDate": "20250515074244"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "licenseRuleName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "licenseStartDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "licenseEndDate",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "licenseQuantity",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "pricePerLicense",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "totalLicenseAmount",
+      "fieldType": "BigDecimal"
+    }
+  ],
+  "name": "License",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "client",
+      "relationshipName": "client",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "partner",
+      "relationshipName": "partner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "commissionRuleSet",
+      "relationshipName": "commissionRuleSet",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

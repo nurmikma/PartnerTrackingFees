@@ -1,0 +1,25 @@
+{
+  "partnerTrackingFeesApp": {
+    "commissionFee": {
+      "home": {
+        "title": "Commission Fees",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Commission Fee",
+        "createOrEditLabel": "Lisa või muuda Commission Fee",
+        "notFound": "Ei leitud ühtegi Commission Fees"
+      },
+      "created": "Uus Commission Fee on loodud identifikaatoriga { param }",
+      "updated": "Commission Fee identifikaatoriga { param } on muudetud",
+      "deleted": "Commission Fee identifikaatoriga { param } on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Commission Fee { id }?"
+      },
+      "detail": {
+        "title": "Commission Fee"
+      },
+      "id": "ID",
+      "commissionAmount": "Commission Amount",
+      "license": "License"
+    }
+  }
+}

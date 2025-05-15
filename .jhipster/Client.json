@@ -1,0 +1,24 @@
+{
+  "annotations": {
+    "changelogDate": "20250515074243"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "clientName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Client",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "partner",
+      "relationshipName": "partner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

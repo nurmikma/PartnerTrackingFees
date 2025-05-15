@@ -1,0 +1,29 @@
+{
+  "partnerTrackingFeesApp": {
+    "commissionRule": {
+      "home": {
+        "title": "Commission Rules",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Commission Rule",
+        "createOrEditLabel": "Lisa või muuda Commission Rule",
+        "notFound": "Ei leitud ühtegi Commission Rules"
+      },
+      "created": "Uus Commission Rule on loodud identifikaatoriga { param }",
+      "updated": "Commission Rule identifikaatoriga { param } on muudetud",
+      "deleted": "Commission Rule identifikaatoriga { param } on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Commission Rule { id }?"
+      },
+      "detail": {
+        "title": "Commission Rule"
+      },
+      "id": "ID",
+      "ruleName": "Rule Name",
+      "description": "Description",
+      "startDay": "Start Day",
+      "endDay": "End Day",
+      "commissionPercentage": "Commission Percentage",
+      "commissionRuleSet": "Commission Rule Set"
+    }
+  }
+}

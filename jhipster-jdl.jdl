@@ -1,0 +1,69 @@
+entity Partner {
+  partnerName String required
+}
+
+entity Client {
+  clientName String required
+}
+
+entity License {
+  licenseRuleName String required,
+  licenseStartDate LocalDate required,
+  licenseEndDate LocalDate,
+  licenseQuantity Integer required,
+  pricePerLicense BigDecimal required,
+  totalLicenseAmount BigDecimal
+}
+
+entity Invoice {
+  invoiceAmount BigDecimal required,
+  invoiceDate LocalDate required,
+  invoiceType String required
+}
+
+entity InvoiceLine {
+  totalAmount BigDecimal required
+}
+
+entity CommissionRule {
+  ruleName String required,
+  description String required,
+  startDay Integer required,
+  endDay Integer,
+  commissionPercentage BigDecimal required
+}
+
+entity CommissionRuleSet {
+  ruleSetName String required
+}
+
+entity CommissionFee {
+  commissionAmount BigDecimal required
+}
+
+relationship OneToMany {
+  Invoice{lineItems} to InvoiceLine
+}
+
+relationship OneToMany {
+  CommissionRuleSet{rules} to CommissionRule
+}
+
+relationship OneToOne {
+  InvoiceLine{license} to License
+}
+
+relationship OneToOne {
+  CommissionFee{license} to License
+}
+
+relationship ManyToOne {
+  Client{partner} to Partner
+  License{client} to Client
+  License{partner} to Partner
+  Invoice{client} to Client
+  Invoice{partner} to Partner
+  License{commissionRuleSet} to CommissionRuleSet
+}
+
+paginate all with pagination
