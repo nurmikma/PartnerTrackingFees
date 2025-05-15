@@ -33,6 +33,13 @@ public class CommissionFee implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    public CommissionFee() {}
+
+    public CommissionFee(License license, BigDecimal commissionAmount) {
+        this.license = license;
+        this.commissionAmount = commissionAmount;
+    }
+
     public Long getId() {
         return this.id;
     }
@@ -47,6 +54,10 @@ public class CommissionFee implements Serializable {
     }
 
     public BigDecimal getCommissionAmount() {
+        return this.commissionAmount;
+    }
+
+    public BigDecimal getCommissionFeeAmount() {
         return this.commissionAmount;
     }
 

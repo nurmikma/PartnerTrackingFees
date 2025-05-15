@@ -47,6 +47,16 @@ public class CommissionRule implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    public CommissionRule() {}
+
+    public CommissionRule(String ruleName, String description, int startDay, Integer endDay, BigDecimal commissionPercentage) {
+        this.ruleName = ruleName;
+        this.description = description;
+        this.startDay = startDay;
+        this.endDay = endDay;
+        this.commissionPercentage = commissionPercentage;
+    }
+
     public Long getId() {
         return this.id;
     }

@@ -27,8 +27,16 @@ public class Client implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Partner partner;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
+    // Default constructor required by JPA
+    public Client() {}
 
+    // Custom constructor with validation
+    public Client(String clientName, Partner partner) {
+        this.clientName = clientName;
+        this.partner = partner;
+    }
+
+    // Getters and setters
     public Long getId() {
         return this.id;
     }
