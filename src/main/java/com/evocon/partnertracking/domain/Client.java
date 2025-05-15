@@ -50,16 +50,18 @@ public class Client implements Serializable {
         return this.clientName;
     }
 
-    public void setClientName(String clientName) {
+    public Client setClientName(String clientName) {
         this.clientName = clientName;
+        return this;
     }
 
     public Partner getPartner() {
         return this.partner;
     }
 
-    public void setPartner(Partner partner) {
+    public Client setPartner(Partner partner) {
         this.partner = partner;
+        return this;
     }
 
     // Equals and hashCode methods based on ID

@@ -47,7 +47,7 @@ public class ClientAsserts {
     public static void assertClientUpdatableFieldsEquals(Client expected, Client actual) {
         assertThat(actual)
             .as("Verify Client relevant properties")
-            .satisfies(a -> assertThat(a.getClientId()).as("check clientId").isEqualTo(expected.getClientId()))
+            .satisfies(a -> assertThat(a.getId()).as("check clientId").isEqualTo(expected.getId()))
             .satisfies(a -> assertThat(a.getClientName()).as("check clientName").isEqualTo(expected.getClientName()))
             .satisfies(a -> assertThat(a.getPartner().getId()).as("check partnerId").isEqualTo(expected.getPartner().getId()));
     }

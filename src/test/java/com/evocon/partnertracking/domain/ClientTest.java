@@ -31,7 +31,7 @@ class ClientTest {
         client.setPartner(partnerBack);
         assertThat(client.getPartner()).isEqualTo(partnerBack);
 
-        client.partner(null);
+        client.setPartner(null);
         assertThat(client.getPartner()).isNull();
     }
 }

@@ -128,9 +128,6 @@ public class PartnerResource {
         Optional<Partner> result = partnerRepository
             .findById(partner.getId())
             .map(existingPartner -> {
-                if (partner.getPartnerID() != null) {
-                    existingPartner.setPartnerID(partner.getPartnerID());
-                }
                 if (partner.getPartnerName() != null) {
                     existingPartner.setPartnerName(partner.getPartnerName());
                 }

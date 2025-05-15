@@ -148,12 +148,6 @@ public class LicenseResource {
                 if (license.getPricePerLicense() != null) {
                     existingLicense.setPricePerLicense(license.getPricePerLicense());
                 }
-                if (license.getClientId() != null) {
-                    existingLicense.setClientId(license.getClientId());
-                }
-                if (license.getPartnerId() != null) {
-                    existingLicense.setPartnerId(license.getPartnerId());
-                }
                 if (license.getCommissionRuleSetId() != null) {
                     existingLicense.setCommissionRuleSetId(license.getCommissionRuleSetId());
                 }

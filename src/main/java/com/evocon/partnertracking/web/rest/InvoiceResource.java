@@ -131,12 +131,6 @@ public class InvoiceResource {
                 if (invoice.getInvoiceId() != null) {
                     existingInvoice.setInvoiceId(invoice.getInvoiceId());
                 }
-                if (invoice.getClientId() != null) {
-                    existingInvoice.setClientId(invoice.getClientId());
-                }
-                if (invoice.getPartnerId() != null) {
-                    existingInvoice.setPartnerId(invoice.getPartnerId());
-                }
                 if (invoice.getInvoiceAmount() != null) {
                     existingInvoice.setInvoiceAmount(invoice.getInvoiceAmount());
                 }

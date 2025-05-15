@@ -128,15 +128,15 @@ public class ClientResource {
         Optional<Client> result = clientRepository
             .findById(client.getId())
             .map(existingClient -> {
-                if (client.getClientId() != null) {
-                    existingClient.setClientId(client.getClientId());
+                if (client.getId() != null) {
+                    existingClient.setId(client.getId());
                 }
                 if (client.getClientName() != null) {
                     existingClient.setClientName(client.getClientName());
                 }
                 // Access the partner field and update the partner ID if provided
-                if (client.getPartner() != null && client.getPartner().getPartnerID() != null) {
-                    existingClient.getPartner().setPartnerID(client.getPartner().getPartnerID());
+                if (client.getPartner() != null && client.getPartner().getId() != null) {
+                    existingClient.getPartner().setId(client.getPartner().getId());
                 }
 
                 return existingClient;

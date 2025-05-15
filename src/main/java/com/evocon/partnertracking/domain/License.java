@@ -1,16 +1,17 @@
 package com.evocon.partnertracking.domain;
 
+import com.evocon.partnertracking.domain.CommissionFee;
+import com.evocon.partnertracking.domain.CommissionRuleSet;
+import com.evocon.partnertracking.domain.InvoiceLine;
+import com.evocon.partnertracking.domain.Partner;
 import com.evocon.partnertracking.utils.Calculations;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * A License.
- */
 @Entity
 @Table(name = "license")
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -47,13 +48,14 @@ public class License implements Serializable {
     @Column(name = "price_per_license", precision = 21, scale = 2, nullable = false)
     private BigDecimal pricePerLicense;
 
-    @NotNull
-    @Column(name = "client_id", nullable = false)
-    private String clientId;
+    // Removed clientId and partnerId as they will be references to entities instead
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
-    @NotNull
-    @Column(name = "partner_id", nullable = false)
-    private String partnerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_id", nullable = false)
+    private Partner partner;
 
     @NotNull
     @Column(name = "commission_rule_set_id", nullable = false)
@@ -64,13 +66,6 @@ public class License implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "partner" }, allowSetters = true)
-    private Client client;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Partner partner;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "rules" }, allowSetters = true)
     private CommissionRuleSet commissionRuleSet;
 
     @JsonIgnoreProperties(value = { "license", "invoice" }, allowSetters = true)
@@ -86,6 +81,7 @@ public class License implements Serializable {
     // Default constructor for JSON
     public License() {}
 
+    // Updated constructor to use Client and Partner objects
     public License(
         String licenseId,
         String licenseRuleName,
@@ -93,8 +89,8 @@ public class License implements Serializable {
         LocalDate licenseEndDate,
         Integer licenseQuantity,
         BigDecimal pricePerLicense,
-        String clientId,
-        String partnerId,
+        Client client,
+        Partner partner,
         String commissionRuleSetId
     ) {
         this.licenseId = licenseId;
@@ -103,11 +99,45 @@ public class License implements Serializable {
         this.licenseEndDate = licenseEndDate;
         this.licenseQuantity = licenseQuantity;
         this.pricePerLicense = pricePerLicense;
-        this.clientId = clientId;
-        this.partnerId = partnerId;
+        this.client = client;
+        this.partner = partner;
         this.commissionRuleSetId = commissionRuleSetId;
         this.totalLicenseAmount = Calculations.calculateTotalLicenseAmount(this.licenseQuantity, this.pricePerLicense);
     }
+
+    // Getter and setter methods adjusted for Client and Partner objects
+
+    public String getLicenseId() {
+        return this.licenseId;
+    }
+
+    public Client getClient() {
+        return this.client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public License client(Client client) {
+        this.setClient(client);
+        return this;
+    }
+
+    public Partner getPartner() {
+        return this.partner;
+    }
+
+    public void setPartner(Partner partner) {
+        this.partner = partner;
+    }
+
+    public License partner(Partner partner) {
+        this.setPartner(partner);
+        return this;
+    }
+
+    // Rest of the class remains the same
 
     @Override
     public String toString() {
@@ -125,12 +155,10 @@ public class License implements Serializable {
             licenseQuantity +
             ", pricePerLicense=" +
             pricePerLicense +
-            ", clientId='" +
-            clientId +
-            '\'' +
-            ", partnerId='" +
-            partnerId +
-            '\'' +
+            ", client=" +
+            client.getId() + // Adjusted for client object
+            ", partner=" +
+            partner.getId() + // Adjusted for partner object
             ", commissionRuleSet=" +
             commissionRuleSetId +
             ", totalLicenseAmount=" +
@@ -139,6 +167,7 @@ public class License implements Serializable {
         );
     }
 
+    //-------------------------------------------------------------------------------------
     public boolean isActiveForMonth(LocalDate targetMonth) {
         return licenseEndDate == null || !licenseEndDate.isBefore(targetMonth);
     }
@@ -154,10 +183,6 @@ public class License implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getLicenseId() {
-        return this.licenseId;
     }
 
     public License licenseId(String licenseId) {
@@ -236,32 +261,6 @@ public class License implements Serializable {
         recalculateTotalAmount();
     }
 
-    public String getClientId() {
-        return this.clientId;
-    }
-
-    public License clientId(String clientId) {
-        this.setClientId(clientId);
-        return this;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getPartnerId() {
-        return this.partnerId;
-    }
-
-    public License partnerId(String partnerId) {
-        this.setPartnerId(partnerId);
-        return this;
-    }
-
-    public void setPartnerId(String partnerId) {
-        this.partnerId = partnerId;
-    }
-
     public String getCommissionRuleSetId() {
         return this.commissionRuleSetId;
     }
@@ -286,32 +285,6 @@ public class License implements Serializable {
 
     public void setTotalLicenseAmount(BigDecimal totalLicenseAmount) {
         this.totalLicenseAmount = totalLicenseAmount;
-    }
-
-    public Client getClient() {
-        return this.client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public License client(Client client) {
-        this.setClient(client);
-        return this;
-    }
-
-    public Partner getPartner() {
-        return this.partner;
-    }
-
-    public void setPartner(Partner partner) {
-        this.partner = partner;
-    }
-
-    public License partner(Partner partner) {
-        this.setPartner(partner);
-        return this;
     }
 
     public CommissionRuleSet getCommissionRuleSet() {

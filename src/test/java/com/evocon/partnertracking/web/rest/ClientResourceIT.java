@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.evocon.partnertracking.IntegrationTest;
 import com.evocon.partnertracking.domain.Client;
+import com.evocon.partnertracking.domain.Partner;
 import com.evocon.partnertracking.repository.ClientRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
@@ -33,14 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class ClientResourceIT {
 
-    private static final String DEFAULT_CLIENT_ID = "AAAAAAAAAA";
-    private static final String UPDATED_CLIENT_ID = "BBBBBBBBBB";
-
     private static final String DEFAULT_CLIENT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_CLIENT_NAME = "BBBBBBBBBB";
-
-    private static final String DEFAULT_PARTNER_ID = "AAAAAAAAAA";
-    private static final String UPDATED_PARTNER_ID = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/clients";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -70,23 +65,23 @@ class ClientResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Client createEntity() {
-        return new Client().clientId(DEFAULT_CLIENT_ID).clientName(DEFAULT_CLIENT_NAME).partnerId(DEFAULT_PARTNER_ID);
+    public static Client createEntity(EntityManager em) {
+        Partner partner = new Partner("Test Partner");
+        em.persist(partner);
+        em.flush();
+        return new Client().setClientName(DEFAULT_CLIENT_NAME).setPartner(partner);
     }
 
-    /**
-     * Create an updated entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
-    public static Client createUpdatedEntity() {
-        return new Client().clientId(UPDATED_CLIENT_ID).clientName(UPDATED_CLIENT_NAME).partnerId(UPDATED_PARTNER_ID);
+    public static Client createUpdatedEntity(EntityManager em) {
+        Partner partner = new Partner("Updated Partner");
+        em.persist(partner);
+        em.flush();
+        return new Client().setClientName(UPDATED_CLIENT_NAME).setPartner(partner);
     }
 
     @BeforeEach
     void initTest() {
-        client = createEntity();
+        client = createEntity(em);
     }
 
     @AfterEach
@@ -141,7 +136,7 @@ class ClientResourceIT {
     void checkClientIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        client.setClientId(null);
+        client.setId(null);
 
         // Create the Client, which fails.
 
@@ -170,22 +165,6 @@ class ClientResourceIT {
 
     @Test
     @Transactional
-    void checkPartnerIdIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        client.setPartnerId(null);
-
-        // Create the Client, which fails.
-
-        restClientMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(client)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void getAllClients() throws Exception {
         // Initialize the database
         insertedClient = clientRepository.saveAndFlush(client);
@@ -196,9 +175,7 @@ class ClientResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(client.getId().intValue())))
-            .andExpect(jsonPath("$.[*].clientId").value(hasItem(DEFAULT_CLIENT_ID)))
-            .andExpect(jsonPath("$.[*].clientName").value(hasItem(DEFAULT_CLIENT_NAME)))
-            .andExpect(jsonPath("$.[*].partnerId").value(hasItem(DEFAULT_PARTNER_ID)));
+            .andExpect(jsonPath("$.[*].clientName").value(hasItem(DEFAULT_CLIENT_NAME)));
     }
 
     @Test
@@ -213,9 +190,7 @@ class ClientResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(client.getId().intValue()))
-            .andExpect(jsonPath("$.clientId").value(DEFAULT_CLIENT_ID))
-            .andExpect(jsonPath("$.clientName").value(DEFAULT_CLIENT_NAME))
-            .andExpect(jsonPath("$.partnerId").value(DEFAULT_PARTNER_ID));
+            .andExpect(jsonPath("$.clientName").value(DEFAULT_CLIENT_NAME));
     }
 
     @Test
@@ -237,7 +212,7 @@ class ClientResourceIT {
         Client updatedClient = clientRepository.findById(client.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedClient are not directly saved in db
         em.detach(updatedClient);
-        updatedClient.clientId(UPDATED_CLIENT_ID).clientName(UPDATED_CLIENT_NAME).partnerId(UPDATED_PARTNER_ID);
+        updatedClient.setClientName(UPDATED_CLIENT_NAME);
 
         restClientMockMvc
             .perform(
@@ -320,7 +295,7 @@ class ClientResourceIT {
         Client partialUpdatedClient = new Client();
         partialUpdatedClient.setId(client.getId());
 
-        partialUpdatedClient.clientName(UPDATED_CLIENT_NAME).partnerId(UPDATED_PARTNER_ID);
+        partialUpdatedClient.setClientName(UPDATED_CLIENT_NAME);
 
         restClientMockMvc
             .perform(
@@ -349,7 +324,7 @@ class ClientResourceIT {
         Client partialUpdatedClient = new Client();
         partialUpdatedClient.setId(client.getId());
 
-        partialUpdatedClient.clientId(UPDATED_CLIENT_ID).clientName(UPDATED_CLIENT_NAME).partnerId(UPDATED_PARTNER_ID);
+        partialUpdatedClient.setClientName(UPDATED_CLIENT_NAME);
 
         restClientMockMvc
             .perform(

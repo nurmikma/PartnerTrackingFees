@@ -10,11 +10,17 @@ public class ClientTestSamples {
     private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     public static Client getClientSample1() {
-        return new Client().id(1L).clientId("clientId1").clientName("clientName1").partnerId("partnerId1");
+        Client client = new Client();
+        client.setId(1L);
+        client.setClientName("clientName1");
+        return client;
     }
 
     public static Client getClientSample2() {
-        return new Client().id(2L).clientId("clientId2").clientName("clientName2").partnerId("partnerId2");
+        Client client = new Client();
+        client.setId(2L);
+        client.setClientName("clientName2");
+        return client;
     }
 
     public static Client getClientRandomSampleGenerator() {
