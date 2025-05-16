@@ -6,6 +6,7 @@
     "composite": true,
     "baseUrl": "src/main/webapp/app",
     "outDir": "target/out-tsc/dist",
+    "lib": ["ES2020", "DOM"], // Add DOM if it's missing
     "paths": {
       "@/*": ["./*"]
     }
