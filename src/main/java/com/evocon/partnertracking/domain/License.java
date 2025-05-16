@@ -129,6 +129,7 @@ public class License implements Serializable {
 
     public void setLicenseQuantity(Integer licenseQuantity) {
         this.licenseQuantity = licenseQuantity;
+        recalculateTotalAmount();
     }
 
     public BigDecimal getPricePerLicense() {
@@ -142,6 +143,7 @@ public class License implements Serializable {
 
     public void setPricePerLicense(BigDecimal pricePerLicense) {
         this.pricePerLicense = pricePerLicense;
+        recalculateTotalAmount();
     }
 
     public BigDecimal getTotalLicenseAmount() {
@@ -265,5 +267,18 @@ public class License implements Serializable {
             ", pricePerLicense=" + getPricePerLicense() +
             ", totalLicenseAmount=" + getTotalLicenseAmount() +
             "}";
+    }
+
+    public boolean isActiveForMonth(LocalDate targetMonth) {
+        return licenseEndDate == null || !licenseEndDate.isBefore(targetMonth);
+    }
+
+    private void recalculateTotalAmount() {
+        if (pricePerLicense != null && licenseQuantity != null && licenseQuantity > 0) {
+            this.totalLicenseAmount = com.evocon.partnertracking.utils.Calculations.calculateTotalLicenseAmount(
+                this.licenseQuantity,
+                this.pricePerLicense
+            );
+        }
     }
 }

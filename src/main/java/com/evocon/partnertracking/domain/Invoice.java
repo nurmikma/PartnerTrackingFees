@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A Invoice.
@@ -188,4 +190,26 @@ public class Invoice implements Serializable {
             ", invoiceType='" + getInvoiceType() + "'" +
             "}";
     }
+
+    @Transient
+    public List<InvoiceLine> getActiveLineItems() {
+        return this.lineItems.stream().filter(line -> isLicenseActive(line.getLicense())).collect(Collectors.toList());
+    }
+
+    private boolean isLicenseActive(License license) {
+        if (license == null || this.invoiceDate == null) {
+            return false;
+        }
+        LocalDate licenseStart = license.getLicenseStartDate();
+        LocalDate licenseEnd = license.getLicenseEndDate();
+        return (licenseStart != null && !invoiceDate.isBefore(licenseStart)) && (licenseEnd == null || !invoiceDate.isAfter(licenseEnd));
+    }
+    /*
+    public Invoice(String clientId, String partnerId, BigDecimal invoiceAmount, LocalDate invoiceDate, String invoiceId) {
+        this.invoiceAmount = invoiceAmount;
+        this.invoiceDate = invoiceDate;
+        this.invoiceType = "license";
+        this.lineItems = new HashSet<>();
+    }
+    */
 }

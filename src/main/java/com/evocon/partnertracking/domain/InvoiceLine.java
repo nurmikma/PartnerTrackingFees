@@ -35,6 +35,13 @@ public class InvoiceLine implements Serializable {
     @JsonIgnoreProperties(value = { "lineItems", "client", "partner" }, allowSetters = true)
     private Invoice invoice;
 
+    public InvoiceLine(License license) {
+        this.license = license;
+        this.totalAmount = license != null ? license.getTotalLicenseAmount() : BigDecimal.ZERO;
+    }
+
+    public InvoiceLine() {}
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -111,9 +118,11 @@ public class InvoiceLine implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "InvoiceLine{" +
-            "id=" + getId() +
-            ", totalAmount=" + getTotalAmount() +
-            "}";
+        return String.format(
+            "InvoiceLine {id=%d, licenseId=%s, totalAmount=%.2f}",
+            getId(),
+            license != null ? license.getId() : "null",
+            totalAmount != null ? totalAmount : BigDecimal.ZERO
+        );
     }
 }

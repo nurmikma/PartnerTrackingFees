@@ -1,10 +1,16 @@
 package com.evocon.partnertracking.domain;
 
+import com.evocon.partnertracking.utils.Calculations;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -116,5 +122,70 @@ public class CommissionRuleSet implements Serializable {
             "id=" + getId() +
             ", ruleSetName='" + getRuleSetName() + "'" +
             "}";
+    }
+
+    public void addRule(CommissionRule newRule) {
+        if (isOverlapping(newRule)) {
+            throw new IllegalArgumentException("Commission rules cannot overlap.");
+        }
+        this.addRules(newRule);
+    }
+
+    private boolean isOverlapping(CommissionRule newRule) {
+        for (CommissionRule rule : this.rules) {
+            int ruleEndDay = rule.getEndDay() == null ? Integer.MAX_VALUE : rule.getEndDay();
+            int newRuleEndDay = newRule.getEndDay() == null ? Integer.MAX_VALUE : newRule.getEndDay();
+
+            if (newRule.getStartDay() <= ruleEndDay && rule.getStartDay() <= newRuleEndDay) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public BigDecimal calculateCommissionForLicense(
+        LocalDate targetDate,
+        BigDecimal licenseAmount,
+        LocalDate licenseStart,
+        LocalDate licenseEnd
+    ) {
+        LocalDate targetStartDate = targetDate.withDayOfMonth(1);
+        LocalDate targetEndDate = targetStartDate.withDayOfMonth(targetStartDate.lengthOfMonth());
+
+        int daysInMonth = targetStartDate.lengthOfMonth();
+        BigDecimal dailyLicenseValue = Calculations.divide(licenseAmount, daysInMonth);
+        BigDecimal totalCommission = BigDecimal.ZERO;
+
+        for (LocalDate day : getApplicableDays(targetStartDate, targetEndDate, licenseStart, licenseEnd)) {
+            long licenseAgeInDays = ChronoUnit.DAYS.between(licenseStart, day);
+            CommissionRule rule = findApplicableRule(licenseAgeInDays);
+
+            if (rule != null) {
+                BigDecimal dailyCommission = Calculations.multiplyByPercentage(dailyLicenseValue, rule.getCommissionPercentage());
+                totalCommission = Calculations.add(totalCommission, dailyCommission);
+            }
+        }
+        return Calculations.roundToTwoDecimals(totalCommission);
+    }
+
+    private List<LocalDate> getApplicableDays(LocalDate targetStart, LocalDate targetEnd, LocalDate licenseStart, LocalDate licenseEnd) {
+        List<LocalDate> applicableDays = new ArrayList<>();
+        for (LocalDate day = targetStart; !day.isAfter(targetEnd); day = day.plusDays(1)) {
+            if (!day.isBefore(licenseStart) && (licenseEnd == null || !day.isAfter(licenseEnd))) {
+                applicableDays.add(day);
+            }
+        }
+        return applicableDays;
+    }
+
+    private CommissionRule findApplicableRule(long licenseAgeInDays) {
+        for (CommissionRule rule : this.rules) {
+            long start = rule.getStartDay();
+            long end = (rule.getEndDay() == null || rule.getEndDay() == 0) ? Long.MAX_VALUE : rule.getEndDay();
+            if (licenseAgeInDays >= start && licenseAgeInDays <= end) {
+                return rule;
+            }
+        }
+        return null;
     }
 }
