@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import CommissionFeeService from './commission-fee.service';
 import { type ICommissionFee } from '@/shared/model/commission-fee.model';
 import { useAlertService } from '@/shared/alert/alert.service';
+import axios from 'axios';
 
 export default defineComponent({
   compatConfig: { MODE: 3 },
@@ -24,8 +25,40 @@ export default defineComponent({
 
     const isFetching = ref(false);
 
+    const selectedInvoiceId = ref<number | null>(null);
+    const invoiceOptions = ref<Array<{ id: number; name: string }>>([]);
+    const isFetchingInvoices = ref(false);
+
     const clear = () => {
       page.value = 1;
+    };
+
+    const loadInvoices = async () => {
+      isFetchingInvoices.value = true;
+      try {
+        const res = await axios.get('/api/invoices');
+        invoiceOptions.value = res.data.map((invoice: any) => ({
+          id: invoice.id,
+          name: `Invoice #${invoice.id}`,
+        }));
+      } catch (error) {
+        alertService.showHttpError(error.response);
+      } finally {
+        isFetchingInvoices.value = false;
+      }
+    };
+
+    const generateCommissionList = async () => {
+      if (!selectedInvoiceId.value) return;
+
+      try {
+        // Call backend to generate commission fees for selected invoice
+        await axios.post(`/api/commission-fees/generate`, { invoiceId: selectedInvoiceId.value });
+        // Refresh list after generation
+        await retrieveCommissionFees();
+      } catch (error) {
+        alertService.showHttpError(error.response);
+      }
     };
 
     const sort = (): Array<any> => {
@@ -43,6 +76,7 @@ export default defineComponent({
           page: page.value - 1,
           size: itemsPerPage.value,
           sort: sort(),
+          invoiceId: selectedInvoiceId.value || undefined,
         };
         const res = await commissionFeeService().retrieve(paginationQuery);
         totalItems.value = Number(res.headers['x-total-count']);
@@ -60,6 +94,11 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      await Promise.all([retrieveCommissionFees(), loadInvoices()]);
+    });
+
+    watch(selectedInvoiceId, async () => {
+      clear();
       await retrieveCommissionFees();
     });
 
@@ -94,18 +133,14 @@ export default defineComponent({
       propOrder.value = newOrder;
     };
 
-    // Whenever order changes, reset the pagination
     watch([propOrder, reverse], async () => {
       if (page.value === 1) {
-        // first page, retrieve new data
         await retrieveCommissionFees();
       } else {
-        // reset the pagination
         clear();
       }
     });
 
-    // Whenever page changes, switch to the new page.
     watch(page, async () => {
       await retrieveCommissionFees();
     });
@@ -128,6 +163,10 @@ export default defineComponent({
       reverse,
       totalItems,
       changeOrder,
+      selectedInvoiceId,
+      invoiceOptions,
+      isFetchingInvoices,
+      generateCommissionList,
       t$,
     };
   },

@@ -3,10 +3,31 @@
     <h2 id="page-heading" data-cy="CommissionFeeHeading">
       <span v-text="t$('partnerTrackingFeesApp.commissionFee.home.title')" id="commission-fee-heading"></span>
       <div class="d-flex justify-content-end">
-        <button class="btn btn-info mr-2" @click="handleSyncList" :disabled="isFetching">
-          <font-awesome-icon icon="sync" :spin="isFetching"></font-awesome-icon>
-          <span v-text="t$('partnerTrackingFeesApp.commissionFee.home.refreshListLabel')"></span>
-        </button>
+        <!-- Invoice Dropdown + Generate Button -->
+        <div class="form-group">
+          <label class="form-control-label" v-text="t$('invoiceApp.client.invoice')" for="client-invoice"></label>
+          <select class="form-control" id="client-invoice" data-cy="invoice" name="invoice" v-model="client.invoice">
+            <option :value="null"></option>
+            <option
+              :value="client.invoice && invoiceOption.id === client.invoice.id ? client.invoice : invoiceOption"
+              v-for="invoiceOption in invoices"
+              :key="invoiceOption.id"
+            >
+              {{ invoiceOption.id }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" @click="previousState()">
+            <font-awesome-icon icon="ban"></font-awesome-icon>&nbsp;
+            <span v-text="t$('entity.action.cancel')"></span>
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <font-awesome-icon icon="save"></font-awesome-icon>&nbsp;
+            <span v-text="t$('entity.action.save')"></span>
+          </button>
+        </div>
         <router-link :to="{ name: 'CommissionFeeCreate' }" custom v-slot="{ navigate }">
           <button
             @click="navigate"

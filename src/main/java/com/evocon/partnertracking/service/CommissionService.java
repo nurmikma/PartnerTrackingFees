@@ -1,6 +1,7 @@
 package com.evocon.partnertracking.service;
 
 import com.evocon.partnertracking.domain.*;
+import com.evocon.partnertracking.repository.CommissionFeeRepository;
 import com.evocon.partnertracking.repository.CommissionRuleSetRepository;
 import com.evocon.partnertracking.repository.InvoiceRepository;
 import com.evocon.partnertracking.repository.PartnerRepository;
@@ -21,11 +22,32 @@ public class CommissionService {
     private final InvoiceRepository invoiceRepo;
     private final CommissionRuleSetRepository ruleSetRepo;
     private final PartnerRepository partnerRepo;
+    private final CommissionFeeRepository commissionFeeRepo;
 
-    public CommissionService(InvoiceRepository invoiceRepo, CommissionRuleSetRepository ruleSetRepo, PartnerRepository partnerRepo) {
+    public CommissionService(
+        InvoiceRepository invoiceRepo,
+        CommissionRuleSetRepository ruleSetRepo,
+        PartnerRepository partnerRepo,
+        CommissionFeeRepository commissionFeeRepo
+    ) {
         this.invoiceRepo = invoiceRepo;
         this.ruleSetRepo = ruleSetRepo;
         this.partnerRepo = partnerRepo;
+        this.commissionFeeRepo = commissionFeeRepo;
+    }
+
+    public void calculateAndSaveCommissionsForMonth(Long partnerId, LocalDate currentDate) {
+        List<CommissionResult> results = calculateMonthlyCommissionsForPartner(partnerId, currentDate);
+
+        for (CommissionResult result : results) {
+            for (CommissionFee fee : result.getCommissions()) {
+                // Optional: clean up old commission fees for this license and month
+                commissionFeeRepo.deleteByLicense(fee.getLicense());
+
+                // Save new fee
+                commissionFeeRepo.save(fee);
+            }
+        }
     }
 
     public List<CommissionResult> calculateMonthlyCommissionsForPartner(Long partnerId, LocalDate currentDate) {

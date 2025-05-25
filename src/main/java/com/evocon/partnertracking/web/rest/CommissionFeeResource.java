@@ -2,19 +2,22 @@ package com.evocon.partnertracking.web.rest;
 
 import com.evocon.partnertracking.domain.CommissionFee;
 import com.evocon.partnertracking.repository.CommissionFeeRepository;
+import com.evocon.partnertracking.repository.InvoiceRepository;
+import com.evocon.partnertracking.service.CommissionService;
 import com.evocon.partnertracking.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +43,17 @@ public class CommissionFeeResource {
     private String applicationName;
 
     private final CommissionFeeRepository commissionFeeRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final CommissionService commissionService;
 
-    public CommissionFeeResource(CommissionFeeRepository commissionFeeRepository) {
+    public CommissionFeeResource(
+        CommissionFeeRepository commissionFeeRepository,
+        InvoiceRepository invoiceRepository,
+        CommissionService commissionService
+    ) {
         this.commissionFeeRepository = commissionFeeRepository;
+        this.invoiceRepository = invoiceRepository;
+        this.commissionService = commissionService;
     }
 
     /**
@@ -182,5 +193,39 @@ public class CommissionFeeResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/invoices")
+    public ResponseEntity<List<Map<String, Object>>> getInvoiceOptions() {
+        List<Map<String, Object>> options = invoiceRepository
+            .findAll()
+            .stream()
+            .map(invoice -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", invoice.getId());
+                map.put("name", "Invoice #" + invoice.getId());
+                return map;
+            })
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(options);
+    }
+
+    @GetMapping("/invoice/{invoiceId}")
+    public ResponseEntity<List<CommissionFee>> getCommissionFeesByInvoice(@PathVariable Long invoiceId) {
+        LOG.debug("REST request to get CommissionFees for Invoice ID: {}", invoiceId);
+        List<CommissionFee> fees = commissionFeeRepository.findAllByInvoiceId(invoiceId);
+        return ResponseEntity.ok(fees);
+    }
+
+    @PostMapping("/actions/generate")
+    public ResponseEntity<Void> generateMonthlyCommissions(
+        @RequestParam Long partnerId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        LOG.debug("REST request to generate commissions for partner {} at date {}", partnerId, date);
+        LocalDate runDate = date != null ? date : LocalDate.now();
+        commissionService.calculateAndSaveCommissionsForMonth(partnerId, runDate);
+        return ResponseEntity.ok().build();
     }
 }
