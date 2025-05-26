@@ -15,32 +15,35 @@ import org.springframework.stereotype.Repository;
 public interface CommissionFeeRepository extends JpaRepository<CommissionFee, Long> {
     @Query(
         """
-            SELECT cf
-            FROM CommissionFee cf
-            WHERE cf.license.id IN (
-                SELECT il.license.id
-                FROM InvoiceLine il
-                WHERE il IN (
-                    SELECT invLine
-                    FROM Invoice inv
-                    JOIN inv.lineItems invLine
-                    WHERE inv.id = :invoiceId
-                )
-              )
+        SELECT commissionFee
+        FROM CommissionFee commissionFee
+        WHERE commissionFee.license.id IN (
+            SELECT invoiceLine.license.id
+            FROM InvoiceLine invoiceLine
+            WHERE invoiceLine IN (
+                SELECT invoiceItem
+                FROM Invoice invoice
+                JOIN invoice.lineItems invoiceItem
+                WHERE invoice.id = :invoiceId
+            )
+        )
         """
     )
     List<CommissionFee> findAllByInvoiceId(@Param("invoiceId") Long invoiceId);
 
     @Query(
         """
-            SELECT cf FROM CommissionFee cf
-            JOIN InvoiceLine il ON il.license = cf.license
-            JOIN Invoice i ON il.invoice = i
-            WHERE FUNCTION('YEAR', i.invoiceDate) = :year AND FUNCTION('MONTH', i.invoiceDate) = :month
+        SELECT commissionFee
+        FROM CommissionFee commissionFee
+        JOIN InvoiceLine invoiceLine ON invoiceLine.license = commissionFee.license
+        JOIN Invoice invoice ON invoiceLine.invoice = invoice
+        WHERE FUNCTION('YEAR', invoice.invoiceDate) = :year
+          AND FUNCTION('MONTH', invoice.invoiceDate) = :month
         """
     )
     List<CommissionFee> findByInvoiceMonth(@Param("year") int year, @Param("month") int month);
 
     List<CommissionFee> findByLicense(License license);
+
     void deleteByLicense(License license);
 }

@@ -2,32 +2,29 @@
   <div>
     <h2 id="page-heading" data-cy="CommissionFeeHeading">
       <span v-text="t$('partnerTrackingFeesApp.commissionFee.home.title')" id="commission-fee-heading"></span>
-      <div class="d-flex justify-content-end">
-        <!-- Invoice Dropdown + Generate Button -->
-        <div class="form-group">
-          <label class="form-control-label" v-text="t$('invoiceApp.client.invoice')" for="client-invoice"></label>
-          <select class="form-control" id="client-invoice" data-cy="invoice" name="invoice" v-model="client.invoice">
-            <option :value="null"></option>
-            <option
-              :value="client.invoice && invoiceOption.id === client.invoice.id ? client.invoice : invoiceOption"
-              v-for="invoiceOption in invoices"
-              :key="invoiceOption.id"
-            >
-              {{ invoiceOption.id }}
+      <div class="d-flex justify-content-end align-items-center">
+        <!-- Select Invoice Dropdown -->
+        <div class="form-group mb-0 mr-2">
+          <select class="form-control" id="client-invoice" v-model="selectedInvoiceId">
+            <option :value="null">Select Invoice</option>
+            <option v-for="invoiceOption in invoiceOptions" :key="invoiceOption.id" :value="invoiceOption.id">
+              {{ invoiceOption.name }}
             </option>
           </select>
         </div>
 
-        <div>
-          <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" @click="previousState()">
-            <font-awesome-icon icon="ban"></font-awesome-icon>&nbsp;
-            <span v-text="t$('entity.action.cancel')"></span>
-          </button>
-          <button type="submit" class="btn btn-primary">
-            <font-awesome-icon icon="save"></font-awesome-icon>&nbsp;
-            <span v-text="t$('entity.action.save')"></span>
-          </button>
-        </div>
+        <!-- Generate Button -->
+        <button type="button" class="btn btn-secondary mr-2" @click="handleGenerate">
+          <span>Generate</span>
+        </button>
+
+        <!-- Refresh Button -->
+        <button class="btn btn-info mr-2" @click="handleSyncList" :disabled="isFetching">
+          <font-awesome-icon icon="sync" :spin="isFetching" />
+          <span v-text="t$('partnerTrackingFeesApp.commissionFee.home.refreshListLabel')"></span>
+        </button>
+
+        <!-- Create Button -->
         <router-link :to="{ name: 'CommissionFeeCreate' }" custom v-slot="{ navigate }">
           <button
             @click="navigate"
@@ -35,7 +32,7 @@
             data-cy="entityCreateButton"
             class="btn btn-primary jh-create-entity create-commission-fee"
           >
-            <font-awesome-icon icon="plus"></font-awesome-icon>
+            <font-awesome-icon icon="plus" />
             <span v-text="t$('partnerTrackingFeesApp.commissionFee.home.createLabel')"></span>
           </button>
         </router-link>
