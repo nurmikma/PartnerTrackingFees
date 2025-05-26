@@ -3,7 +3,7 @@ import axios from 'axios';
 const TIMEOUT = 1000000;
 const onRequestSuccess = config => {
   config.timeout = TIMEOUT;
-  //config.url = `${SERVER_API_URL}${config.url}`;
+  config.url = `${SERVER_API_URL}${config.url}`;
   return config;
 };
 const setupAxiosInterceptors = (onUnauthenticated, onServerError) => {

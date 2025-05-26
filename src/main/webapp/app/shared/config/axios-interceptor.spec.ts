@@ -14,15 +14,15 @@ describe('Axios interceptor', () => {
   it('should use localStorage to provide bearer', () => {
     const result = setupAxiosConfig.onRequestSuccess(() => console.log('A problem occurred'));
 
-    //expect(result.url.indexOf(SERVER_API_URL)).toBeGreaterThan(-1);
-    expect(result.url).toContain('/api/test');
+    expect(result.url.indexOf(SERVER_API_URL)).toBeGreaterThan(-1);
+    //expect(result.url).toContain('/api/test');
   });
 
   it('should use sessionStorage to provide bearer', () => {
     const result = setupAxiosConfig.onRequestSuccess(() => console.log('A problem occurred'));
 
-    //expect(result.url.indexOf(SERVER_API_URL)).toBeGreaterThan(-1);
-    expect(result.url).toContain('/api/test');
+    expect(result.url.indexOf(SERVER_API_URL)).toBeGreaterThan(-1);
+    //expect(result.url).toContain('/api/test');
   });
 });
 

@@ -31,9 +31,27 @@ public class CommissionFee implements Serializable {
     @JoinColumn(unique = true)
     private License license;
 
+    @ManyToOne
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public CommissionFee() {}
+
+    public CommissionFee(License license, BigDecimal commissionAmount, Invoice invoice) {
+        this.license = license;
+        this.commissionAmount = commissionAmount;
+        this.invoice = invoice;
+    }
 
     public CommissionFee(License license, BigDecimal commissionAmount) {
         this.license = license;

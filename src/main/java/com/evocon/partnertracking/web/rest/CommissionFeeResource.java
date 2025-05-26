@@ -1,7 +1,10 @@
 package com.evocon.partnertracking.web.rest;
 
 import com.evocon.partnertracking.domain.CommissionFee;
+import com.evocon.partnertracking.domain.CommissionRuleSet;
+import com.evocon.partnertracking.domain.Invoice;
 import com.evocon.partnertracking.repository.CommissionFeeRepository;
+import com.evocon.partnertracking.repository.CommissionRuleSetRepository;
 import com.evocon.partnertracking.repository.InvoiceRepository;
 import com.evocon.partnertracking.service.CommissionService;
 import com.evocon.partnertracking.web.rest.errors.BadRequestAlertException;
@@ -19,9 +22,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -38,6 +43,7 @@ public class CommissionFeeResource {
     private static final Logger LOG = LoggerFactory.getLogger(CommissionFeeResource.class);
 
     private static final String ENTITY_NAME = "commissionFee";
+    private final CommissionRuleSetRepository commissionRuleSetRepository;
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
@@ -49,11 +55,13 @@ public class CommissionFeeResource {
     public CommissionFeeResource(
         CommissionFeeRepository commissionFeeRepository,
         InvoiceRepository invoiceRepository,
-        CommissionService commissionService
+        CommissionService commissionService,
+        CommissionRuleSetRepository commissionRuleSetRepository
     ) {
         this.commissionFeeRepository = commissionFeeRepository;
         this.invoiceRepository = invoiceRepository;
         this.commissionService = commissionService;
+        this.commissionRuleSetRepository = commissionRuleSetRepository;
     }
 
     /**
@@ -211,21 +219,22 @@ public class CommissionFeeResource {
         return ResponseEntity.ok(options);
     }
 
-    @GetMapping("/invoice/{invoiceId}")
-    public ResponseEntity<List<CommissionFee>> getCommissionFeesByInvoice(@PathVariable Long invoiceId) {
-        LOG.debug("REST request to get CommissionFees for Invoice ID: {}", invoiceId);
-        List<CommissionFee> fees = commissionFeeRepository.findAllByInvoiceId(invoiceId);
-        return ResponseEntity.ok(fees);
-    }
+    @PostMapping("/invoice/{invoiceId}")
+    public ResponseEntity<List<CommissionFee>> generateCommissionFeesByInvoice(@PathVariable Long invoiceId) {
+        LOG.debug("REST request to dynamically calculate CommissionFees for Invoice ID: {}", invoiceId);
 
-    @PostMapping("/actions/generate")
-    public ResponseEntity<Void> generateMonthlyCommissions(
-        @RequestParam Long partnerId,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
-        LOG.debug("REST request to generate commissions for partner {} at date {}", partnerId, date);
-        LocalDate runDate = date != null ? date : LocalDate.now();
-        commissionService.calculateAndSaveCommissionsForMonth(partnerId, runDate);
-        return ResponseEntity.ok().build();
+        Invoice invoice = invoiceRepository
+            .findById(invoiceId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invoice not found"));
+
+        List<CommissionRuleSet> ruleSets = commissionRuleSetRepository.findAll();
+
+        // Make sure your service saves the fees, not just calculates
+        List<CommissionFee> calculatedFees = commissionService.calculateCommissionFeesForInvoice(invoice, ruleSets);
+
+        // Save the calculated fees in DB (make sure this is implemented in your service)
+        commissionFeeRepository.saveAll(calculatedFees);
+
+        return ResponseEntity.ok(calculatedFees);
     }
 }

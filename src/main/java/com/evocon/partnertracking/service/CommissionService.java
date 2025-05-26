@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -69,7 +70,7 @@ public class CommissionService {
 
         List<CommissionResult> results = new ArrayList<>();
         for (Invoice invoice : targetMonthInvoices) {
-            List<CommissionFee> commissions = calculateCommissionsForInvoice(invoice, ruleSets);
+            List<CommissionFee> commissions = calculateCommissionFeesForInvoice(invoice, ruleSets);
             results.add(new CommissionResult(invoice, commissions));
         }
 
@@ -87,7 +88,7 @@ public class CommissionService {
                 continue;
             }
 
-            List<CommissionFee> commissions = calculateCommissionsForInvoice(invoice, ruleSets);
+            List<CommissionFee> commissions = calculateCommissionFeesForInvoice(invoice, ruleSets);
             BigDecimal invoiceTotal = commissions
                 .stream()
                 .map(CommissionFee::getCommissionFeeAmount)
@@ -104,21 +105,15 @@ public class CommissionService {
         logger.info("=== TOTAL COMMISSION FOR PARTNER {}: {} ===", partnerId, totalPartnerCommission);
     }
 
-    private List<CommissionFee> calculateCommissionsForInvoice(Invoice invoice, List<CommissionRuleSet> commissionRuleSets) {
-        List<CommissionFee> commissions = new ArrayList<>();
-        // Calculate for the previous month of invoice date
+    public List<CommissionFee> calculateCommissionFeesForInvoice(Invoice invoice, List<CommissionRuleSet> ruleSets) {
         LocalDate targetMonth = invoice.getInvoiceDate().minusMonths(1).withDayOfMonth(1);
+        List<CommissionFee> commissions = new ArrayList<>();
 
         for (InvoiceLine lineItem : invoice.getLineItems()) {
             License license = lineItem.getLicense();
 
             if (license.isActiveForMonth(targetMonth)) {
-                Optional<CommissionRuleSet> optionalCommissionRuleSet = commissionRuleSets
-                    .stream()
-                    .filter(ruleSet -> ruleSet.getId().equals(license.getCommissionRuleSet().getId()))
-                    .findFirst();
-
-                CommissionRuleSet commissionRuleSet = optionalCommissionRuleSet.orElseThrow(() ->
+                CommissionRuleSet commissionRuleSet = Optional.ofNullable(license.getCommissionRuleSet()).orElseThrow(() ->
                     new IllegalArgumentException("Commission Ruleset not found for license: " + license.getId())
                 );
 
@@ -129,7 +124,12 @@ public class CommissionService {
                     license.getLicenseEndDate()
                 );
 
-                commissions.add(new CommissionFee(license, commissionAmount));
+                CommissionFee fee = new CommissionFee();
+                fee.setLicense(license);
+                fee.setCommissionAmount(commissionAmount);
+                fee.setInvoice(invoice);
+
+                commissions.add(fee);
             }
         }
 

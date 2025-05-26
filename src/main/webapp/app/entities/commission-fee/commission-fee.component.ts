@@ -36,7 +36,7 @@ export default defineComponent({
     const loadInvoices = async () => {
       isFetchingInvoices.value = true;
       try {
-        const res = await axios.get('/api/invoices');
+        const res = await axios.get('api/commission-fees/invoices');
         invoiceOptions.value = res.data.map((invoice: any) => ({
           id: invoice.id,
           name: `Invoice #${invoice.id}`,
@@ -53,11 +53,32 @@ export default defineComponent({
 
       try {
         // Call backend to generate commission fees for selected invoice
-        await axios.post(`/api/commission-fees/generate`, { invoiceId: selectedInvoiceId.value });
+        await axios.post(`api/commission-fees/generate`, { invoiceId: selectedInvoiceId.value });
         // Refresh list after generation
         await retrieveCommissionFees();
       } catch (error) {
         alertService.showHttpError(error.response);
+      }
+    };
+
+    const handleGenerate = async () => {
+      if (!selectedInvoiceId.value) {
+        alertService.showError('Please select an invoice first.');
+        return;
+      }
+
+      isFetching.value = true;
+      try {
+        // POST request now, no body needed because invoiceId is in URL path
+        const response = await axios.post(`api/commission-fees/invoice/${selectedInvoiceId.value}`);
+        commissionFees.value = response.data;
+
+        alertService.showInfo('Commission fees calculated successfully!', { variant: 'success' });
+      } catch (error) {
+        console.error('Failed to generate commission fees:', error);
+        alertService.showHttpError(error.response);
+      } finally {
+        isFetching.value = false;
       }
     };
 
@@ -167,6 +188,7 @@ export default defineComponent({
       invoiceOptions,
       isFetchingInvoices,
       generateCommissionList,
+      handleGenerate,
       t$,
     };
   },
