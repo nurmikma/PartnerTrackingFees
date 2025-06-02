@@ -26,10 +26,10 @@ public class CommissionFee implements Serializable {
     @Column(name = "commission_amount", precision = 21, scale = 2, nullable = false)
     private BigDecimal commissionAmount;
 
-    @JsonIgnoreProperties(value = { "client", "partner", "commissionRuleSet", "invoiceLine", "commissionFee" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    private License license;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_line_id")
+    @JsonIgnoreProperties(value = { "invoice", "license", "commissionFees" }, allowSetters = true)
+    private InvoiceLine invoiceLine;
 
     @ManyToOne
     @JoinColumn(name = "invoice_id")
@@ -47,15 +47,15 @@ public class CommissionFee implements Serializable {
 
     public CommissionFee() {}
 
-    public CommissionFee(License license, BigDecimal commissionAmount, Invoice invoice) {
-        this.license = license;
+    public CommissionFee(BigDecimal commissionAmount, Invoice invoice, InvoiceLine invoiceLine) {
         this.commissionAmount = commissionAmount;
         this.invoice = invoice;
+        this.invoiceLine = invoiceLine;
     }
 
-    public CommissionFee(License license, BigDecimal commissionAmount) {
-        this.license = license;
+    public CommissionFee(BigDecimal commissionAmount, InvoiceLine invoiceLine) {
         this.commissionAmount = commissionAmount;
+        this.invoiceLine = invoiceLine;
     }
 
     public Long getId() {
@@ -88,17 +88,12 @@ public class CommissionFee implements Serializable {
         this.commissionAmount = commissionAmount;
     }
 
-    public License getLicense() {
-        return this.license;
+    public InvoiceLine getInvoiceLine() {
+        return invoiceLine;
     }
 
-    public void setLicense(License license) {
-        this.license = license;
-    }
-
-    public CommissionFee license(License license) {
-        this.setLicense(license);
-        return this;
+    public void setInvoiceLine(InvoiceLine invoiceLine) {
+        this.invoiceLine = invoiceLine;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

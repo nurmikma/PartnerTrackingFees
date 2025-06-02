@@ -60,10 +60,6 @@ public class License implements Serializable {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "license")
     private InvoiceLine invoiceLine;
 
-    @JsonIgnoreProperties(value = { "license" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "license")
-    private CommissionFee commissionFee;
-
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
