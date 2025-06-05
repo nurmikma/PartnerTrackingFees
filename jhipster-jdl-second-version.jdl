@@ -1,5 +1,17 @@
+enum UserRole {
+  PARTNER,
+  MANAGER,
+  ADMIN
+}
+
+entity User {
+  login String required,
+  role UserRole required
+}
+
 entity Partner {
-  partnerName String required
+  partnerName String required,
+  partnerUserName String required
 }
 
 entity Client {
@@ -7,23 +19,49 @@ entity Client {
 }
 
 entity License {
-  licenseRuleName String required,
-  licenseStartDate LocalDate required,
-  licenseEndDate LocalDate,
+  licenseArticle String required,
+  licenseDescription String required,
   licenseQuantity Integer required,
   pricePerLicense BigDecimal required,
-  totalLicenseAmount BigDecimal
+  totalPrice BigDecimal,
+  licenseStartDate LocalDate required,
+  licenseEndDate LocalDate
+}
+
+enum InvoiceStatus {
+  DRAFT,
+  PENDING_APPROVAL,
+  APPROVED,
 }
 
 entity Invoice {
-  invoiceAmount BigDecimal required,
+  invoiceStatus InvoiceStatus required,
+  invoiceNumber String required,
   invoiceDate LocalDate required,
-  invoiceType String required
-  paid Boolean required
+  invoiceAmount BigDecimal required,
+  invoiceDueDate LocalDate required,
+  licenseFee BigDecimal required,
+  hardwareAndShippingFee BigDecimal required,
+  invoicePaymentStatus Boolean required,
+  invoicePaymentDate LocalDate
+}
+
+entity PartnerFee {
+  amount BigDecimal required,
+  percentage BigDecimal required,
+  status Boolean required,
+  invoiceRef String,
+  paymentDate LocalDate
+}
+
+enum InvoiceLineType {
+  LICENSE,
+  HARDWARE
 }
 
 entity InvoiceLine {
-  totalAmount BigDecimal required
+  lineType InvoiceLineType required,
+  lineTotal BigDecimal required
 }
 
 entity CommissionRule {
@@ -38,25 +76,33 @@ entity CommissionRuleSet {
   ruleSetName String required
 }
 
-entity CommissionFee {
-  commissionAmount BigDecimal required
+entity HardwareAndShipping {
+  hardwareArticle String required,
+  hardwareDescription String required,
+  hardwareQuantity Integer required,
+  pricePerItem BigDecimal required,
+  totalPrice BigDecimal required
+}
+
+relationship OneToOne {
+  PartnerFee{invoice} to Invoice
 }
 
 relationship OneToMany {
-  Invoice{lineItems} to InvoiceLine
+  Invoice{lineItems} to InvoiceLine,
   CommissionRuleSet{rules} to CommissionRule
 }
 
 relationship ManyToOne {
-  Client{partner} to Partner
-  License{client} to Client
-  License{partner} to Partner
-  Invoice{client} to Client
-  Invoice{partner} to Partner
-  License{commissionRuleSet} to CommissionRuleSet
-  InvoiceLine{license} to License
-  CommissionFee{invoiceLine} to InvoiceLine
-
+  Client{partner} to Partner,
+  License{client} to Client,
+  License{partner} to Partner,
+  Invoice{client} to Client,
+  Invoice{partner} to Partner,
+  License{commissionRuleSet} to CommissionRuleSet,
+  InvoiceLine{license} to License,
+  InvoiceLine{hardware} to HardwareAndShipping,
+  User{partner} to Partner
 }
 
 paginate all with pagination
