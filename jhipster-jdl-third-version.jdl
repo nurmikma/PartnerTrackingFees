@@ -1,0 +1,128 @@
+enum UserRole {
+  PARTNER,
+  MANAGER,
+  ADMIN
+}
+
+enum ApprovalStatus {
+  PENDING,
+  APPROVED,
+  REJECTED
+}
+
+
+enum ArticleType {
+  LICENSE,
+  HARDWARE,
+  SHIPPING,
+  OTHER
+}
+
+enum ItemStatus {
+  ACTIVE,
+  INACTIVE
+}
+
+entity User {
+  login String required,
+  role UserRole required
+}
+
+entity Partner {
+  partnerName String required
+}
+
+entity Client {
+  tenantId String required,
+  clientName String required,
+  approvalStatus ApprovalStatus required
+}
+
+entity Item {
+  articleType ArticleType required,
+  articleName String required,
+  articleDescription String,
+  unitPrice BigDecimal required
+}
+
+entity ClientItem {
+  itemQuantity Integer required,
+  startDate LocalDate required,
+  endDate LocalDate,
+  itemStatus ItemStatus required,
+  approvalStatus ApprovalStatus required
+}
+
+entity Invoice {
+  invoiceNumber String required,
+  invoiceDate LocalDate required,
+  invoiceAmount BigDecimal required,
+  invoiceDueDate LocalDate required,
+  invoiceLicenseFee BigDecimal required,
+  invoiceHardwareAndShippingFee BigDecimal required,
+  invoicePaymentStatus Boolean required,
+  sentToMerit Boolean required,
+  invoicePaymentDate LocalDate,
+  partnerFeeAmount BigDecimal required,
+  partnerFeeStatus Boolean required,
+  partnerFeePaymentDate LocalDate
+}
+
+entity PartnerPayment {
+  paymentReference String required,
+  paymentDate LocalDate required,
+  totalAmount BigDecimal required,
+  sentToMerit Boolean required
+}
+
+entity CommissionRule {
+  ruleName String required,
+  ruleDescription String required,
+  ruleStartDay Integer required,
+  ruleEndDay Integer,
+  ruleCommissionPercentage BigDecimal required
+}
+
+entity InvoiceItem {
+  itemQuantity Integer required,
+  unitPriceAtInvoice BigDecimal required,
+  commissionPercentage BigDecimal,
+  commissionAmount BigDecimal
+  articleNameSnapshot String required,
+  articleDescriptionSnapshot String required,
+  articleTypeSnapshot ArticleType required
+}
+
+relationship ManyToOne {
+  InvoiceItem{invoice} to Invoice,
+  InvoiceItem{clientItem} to ClientItem
+}
+
+
+entity CommissionRuleSet {
+  ruleSetName String required
+}
+
+relationship OneToMany {
+  CommissionRuleSet{rules} to CommissionRule
+}
+
+relationship ManyToMany {
+  Invoice{clientItems} to ClientItem
+}
+
+relationship ManyToOne {
+  Client{partner} to Partner,
+  ClientItem{client} to Client,
+  ClientItem{item} to Item,
+  Invoice{client} to Client,
+  Invoice{partner} to Partner,
+  User{partner} to Partner,
+  Item{commissionRuleSet} to CommissionRuleSet
+}
+
+relationship ManyToMany {
+  PartnerPayment{invoices} to Invoice
+}
+
+paginate all with pagination
